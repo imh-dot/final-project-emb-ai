@@ -9,13 +9,13 @@ def home():
 
 @app.route("/emotionDetector", methods=["GET"])
 def emotion_detector_api():
-    text_to_analyze = (request.args.get("textToAnalyze") or "").strip()
-    if not text_to_analyze:
-        return "Please provide text to analyze.", 400
+    text = (request.args.get("textToAnalyze") or "").strip()
+    if not text:
+        return "Invalid text! Please try again!", 200
 
-    result = emotion_detector(text_to_analyze)
-    if isinstance(result, dict) and "error" in result:
-        return f"Error occurred: {result['error']}", 502
+    result = emotion_detector(text)
+    if result.get("dominant_emotion") is None:
+        return "Invalid text! Please try again!", 200
 
     response_text = (
         f"For the given statement, the system response is "
@@ -26,7 +26,6 @@ def emotion_detector_api():
         f"'sadness': {result['sadness']}. "
         f"The dominant emotion is {result['dominant_emotion']}."
     )
-
     return response_text, 200
 
 
